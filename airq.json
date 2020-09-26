@@ -1,0 +1,9 @@
+{
+  "chords": {
+      "skey":    "secret_key",
+      "host":    "chords_host.com",
+      "enabled": true,
+      "inst_id": "1",
+      "test":    false
+  }
+}
