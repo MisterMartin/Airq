@@ -1,6 +1,7 @@
 import qwiic_ccs811
 import qwiic_bme280
 import time
+import sys
 """
 CCS811
 
@@ -88,7 +89,11 @@ class ccs811_bme280(object):
 
 
 if __name__ == '__main__':
+    sleep_int = 1
+    if len(sys.argv) == 2:
+      sleep_int = int(sys.argv[1])
+
     device = ccs811_bme280()
     while True:
       print(device.reading())
-      time.sleep(1)
+      time.sleep(sleep_int)
