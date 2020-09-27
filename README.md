@@ -35,13 +35,20 @@ sudo: unable to resolve host airq
 70: -- -- -- -- -- -- -- 77
 ```
 
-Verify the BME280:
+Verify the combo card:
 
-        python3 bme280.py
-
-Verify the CCS811:
-
-        python ccs811.py
+    python ccs811_bme280.py
+    CCS811 starting up
+    CCS811 starting up
+    CCS811 starting up
+    CCS811 starting up
+    {'rh': '22.70', 'tdry_degc': '25.91', 'eco2_ppm': '400.00', 'pres_mb': '858.09', 'tvoc_ppb': '0.00'}
+    {'rh': '21.82', 'tdry_degc': '25.98', 'eco2_ppm': '400.00', 'pres_mb': '857.37', 'tvoc_ppb': '0.00'}
+    {'rh': '21.85', 'tdry_degc': '25.93', 'eco2_ppm': '415.00', 'pres_mb': '857.92', 'tvoc_ppb': '2.00'}
+    {'rh': '21.82', 'tdry_degc': '25.98', 'eco2_ppm': '415.00', 'pres_mb': '857.43', 'tvoc_ppb': '2.00'}
+    {'rh': '21.80', 'tdry_degc': '25.93', 'eco2_ppm': '415.00', 'pres_mb': '857.86', 'tvoc_ppb': '2.00'}
+    {'rh': '21.82', 'tdry_degc': '25.98', 'eco2_ppm': '418.00', 'pres_mb': '857.44', 'tvoc_ppb': '2.00'}
+    {'rh': '21.91', 'tdry_degc': '25.95', 'eco2_ppm': '418.00', 'pres_mb': '857.62', 'tvoc_ppb': '2.00'}
 
 ## Resources
 
