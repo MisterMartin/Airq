@@ -4,6 +4,7 @@
       "host":    "chords_host.com",
       "enabled": true,
       "inst_id": "1",
-      "test":    false
+      "test":    false,
+      "sleep_secs": 60
   }
 }
