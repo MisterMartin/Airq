@@ -22,8 +22,13 @@ test_config = """
         "host":    "chords_host.com",
         "enabled": true,
         "inst_id": "1",
-        "test":    false,
-        "sleep_secs": 5
+        "test":    false
+    },
+    "airq": {
+      "ccs811_i2c": 91,
+      "bme280_i2c": 119,
+      "ccs811_n_samples": 2,
+      "report_interval": 60
     }
 }
 """
@@ -92,19 +97,23 @@ if __name__ == '__main__':
         "test": config["chords"]["test"],
         "skey": config["chords"]["skey"]
     }
-    if "sleep_secs" in config["chords"]:
-        sleep_secs = config["chords"]["sleep_secs"]
-    else:
-        sleep_secs = 5
 
-    device = ccs811_bme280.ccs811_bme280(n_avg=sleep_secs)
+    ccs811_i2c = config["airq"]["ccs811_i2c"]
+    bme280_i2c = config["airq"]["bme280_i2c"]
+    ccs811_n_samples = config["airq"]["ccs811_n_samples"]
+    chords_report_interval = config["airq"]["chords_report_interval"]
+
+    device = ccs811_bme280.ccs811_bme280(
+      ccs811_address=ccs811_i2c, 
+      bme280_address=bme280_i2c, 
+      ccs811_n_samples=ccs811_n_samples)
 
     # Start the CHORDS sender thread
     tochords.startSender()
 
     while True:
         # Sleep until the next measurement time
-        time.sleep(sleep_secs)
+        time.sleep(chords_report_interval)
 
         # Get the CCS811 reading
         ccs811_data = device.reading()
