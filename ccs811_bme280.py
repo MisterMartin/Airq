@@ -94,6 +94,7 @@ class ccs811_bme280(object):
   def queue_add(self, q, val, param):
     if val == 65535:
       print("Ignoring error value for", param, "(", val, ")")
+      return
     q.append(val)
     if len(q) > self.ccs811_n_samples:
       q.pop(0)
