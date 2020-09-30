@@ -3,6 +3,7 @@ import qwiic_bme280
 import time
 import sys
 import _thread
+import statistics as stat
 
 
 """
@@ -33,9 +34,9 @@ class ccs811_bme280(object):
   }
 
 
-  def __init__(self, n_avg=60, ccs811_address=0x5b, bme280_address=0x77):
+  def __init__(self, ccs811_address=0x5b, bme280_address=0x77, ccs811_n_samples=1):
     self.lock = _thread.allocate_lock()
-    self.n_avg = n_avg
+    self.ccs811_n_samples = ccs811_n_samples
 
     self.ccs811 = qwiic_ccs811.QwiicCcs811(address=ccs811_address)
     self.bme280 = bme280 = qwiic_bme280.QwiicBme280(address=bme280_address)
@@ -60,7 +61,7 @@ class ccs811_bme280(object):
       self.read_bme280()
       self.read_ccs811()
       self.lock.release()
-      time.sleep(1)
+      time.sleep(2)
 
   def reading(self):
     """
@@ -72,46 +73,63 @@ class ccs811_bme280(object):
     """
     self.lock.acquire()
     retval = {}
-    retval["tvoc_ppb"] = "{:.2f}".format(self.queue_avg(self.tvoc_q))
-    retval["eco2_ppm"] = "{:.2f}".format(self.queue_avg(self.eco2_q))
-    retval["pres_mb"] = "{:.2f}".format(self.queue_avg(self.pres_q))
-    retval["tdry_degc"] = "{:.2f}".format(self.queue_avg(self.tdry_q))
-    retval["rh"] = "{:.2f}".format(self.queue_avg(self.rh_q))
+    tvoc = self.queue_avg(self.tvoc_q)
+    retval["tvoc_ppb"] = "{:.2f}".format(tvoc[0])
+    retval["tvoc_std"] = "{:.2f}".format(tvoc[2])
+    eco2 = self.queue_avg(self.eco2_q)
+
+    retval["eco2_ppm"] = "{:.2f}".format(eco2[0])
+    retval["eco2_std"] = "{:.2f}".format(eco2[2])
+
+    retval["pres_mb"] = "{:.2f}".format(self.queue_avg(self.pres_q)[0])
+
+    retval["tdry_degc"] = "{:.2f}".format(self.queue_avg(self.tdry_q)[0])
+
+    retval["rh"] = "{:.2f}".format(self.queue_avg(self.rh_q)[0])
+
     retval["n"] = "{:d}".format(len(self.tvoc_q))
     self.lock.release()
     return retval
 
-  def queue_add(self, q, val):
+  def queue_add(self, q, val, param):
+    if val == 65535:
+      print("Ignoring error value for", param, "(", val, ")")
     q.append(val)
-    if len(q) > self.n_avg:
+    if len(q) > self.ccs811_n_samples:
       q.pop(0)
-    return q
 
   def queue_avg(self, q):
-    return sum(q)/len(q)
+    """
+    Return a tuple of the q:
+      (median, mean, std dev)
+    """
+    print(q)
+    retval = (stat.median(q), stat.mean(q), stat.stdev(q))
+    print(retval)
+    return retval
 
   def read_bme280(self):
 
     self.rh = self.bme280.humidity
     self.tdry = self.bme280.temperature_celsius
     self.pres = self.bme280.pressure/100.0
-    self.queue_add(self.rh_q, self.rh)
-    self.queue_add(self.tdry_q, self.tdry)
-    self.queue_add(self.pres_q, self.pres)
+    self.queue_add(self.rh_q, self.rh, "rh")
+    self.queue_add(self.tdry_q, self.tdry, "tdry")
+    self.queue_add(self.pres_q, self.pres, "pres")
 
 
   def read_ccs811(self):
     self.ccs811.set_environmental_data(self.rh, self.tdry)
     while not self.ccs811.data_available():
       print("CCS811 starting up")
-      time.sleep(1)
+      time.sleep(2)
 
     if self.ccs811.data_available():
       self.ccs811.read_algorithm_results()
       self.eco2 = self.ccs811.CO2
       self.tvoc = self.ccs811.TVOC
-      self.queue_add(self.eco2_q, self.eco2)
-      self.queue_add(self.tvoc_q, self.tvoc)
+      self.queue_add(self.eco2_q, self.eco2, "eco2")
+      self.queue_add(self.tvoc_q, self.tvoc, "tvoc")
 
     else:
       print("CCS811  data not avaiable")

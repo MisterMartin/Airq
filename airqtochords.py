@@ -72,7 +72,9 @@ if __name__ == '__main__':
     new_keys = {
         'time': 'at',
         'tvoc_ppb': 'tvoc',
+        'tvoc_std': 'tvoc_std',
         'eco2_ppm': 'eco2',
+        'eco2_std': 'eco2_std',
         'pres_mb': 'pres',
         'tdry_degc': 'tdry',
         'rh': 'rh',
