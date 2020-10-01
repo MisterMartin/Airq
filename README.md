@@ -10,14 +10,17 @@ Enable I2C clock stretching by setting the I2C baud rate in `/boot/config.txt`:
 
         dtparam=i2c_arm_baudrate=10000
 
-Install i2c tools:
+Install packages:
 
         sudo apt-get install i2c-tools
-
+        sudo apt-get install libatlas-base-dev
 Install chip support:
 
         # Install the sparkfun qwiic python support
         sudo pip3 install sparkfun-qwiic
+
+Python packages:
+    pip3 install numpy
 
 ## Testing
 Verify that both chips are there:

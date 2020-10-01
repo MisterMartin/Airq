@@ -1,5 +1,6 @@
 import qwiic_ccs811
 import qwiic_bme280
+import IQR
 import time
 import sys
 import _thread
@@ -73,44 +74,43 @@ class ccs811_bme280(object):
     """
     self.lock.acquire()
     retval = {}
-    tvoc = self.queue_avg(self.tvoc_q)
+    tvoc = self.queue_avg(self.tvoc_q, "tvoc")
     retval["tvoc_ppb"] = "{:.2f}".format(tvoc[0])
     retval["tvoc_std"] = "{:.2f}".format(tvoc[2])
-    eco2 = self.queue_avg(self.eco2_q)
+    eco2 = self.queue_avg(self.eco2_q, "eco2")
 
     retval["eco2_ppm"] = "{:.2f}".format(eco2[0])
     retval["eco2_std"] = "{:.2f}".format(eco2[2])
 
-    retval["pres_mb"] = "{:.2f}".format(self.queue_avg(self.pres_q)[0])
+    retval["pres_mb"] = "{:.2f}".format(self.queue_avg(self.pres_q, "pres")[0])
 
-    retval["tdry_degc"] = "{:.2f}".format(self.queue_avg(self.tdry_q)[0])
+    retval["tdry_degc"] = "{:.2f}".format(self.queue_avg(self.tdry_q, "tdry")[0])
 
-    retval["rh"] = "{:.2f}".format(self.queue_avg(self.rh_q)[0])
+    retval["rh"] = "{:.2f}".format(self.queue_avg(self.rh_q, "rh")[0])
 
-    retval["n"] = "{:d}".format(len(self.tvoc_q))
+    retval["n"] = "{:d}".format(len(self.rh_q))
     self.lock.release()
     return retval
 
   def queue_add(self, q, val, param):
-    if val == 65535:
-      print("Ignoring error value for", param, "(", val, ")")
-      return
     q.append(val)
     if len(q) > self.ccs811_n_samples:
       q.pop(0)
 
-  def queue_avg(self, q):
+  def queue_avg(self, q, name):
     """
     Return a tuple of the q:
       (median, mean, std dev)
     """
-    print(q)
-    retval = (stat.median(q), stat.mean(q), stat.stdev(q))
-    print(retval)
+    (cleaned, outliers) = IQR.iqr_filter(q, 5.0)
+    retval = (stat.median(cleaned), stat.mean(cleaned), stat.stdev(cleaned))
+    if len(outliers):
+      print(name, q)
+      print("*** Ignoring outliers in", name, outliers)
+      print(retval)
     return retval
 
   def read_bme280(self):
-
     self.rh = self.bme280.humidity
     self.tdry = self.bme280.temperature_celsius
     self.pres = self.bme280.pressure/100.0
@@ -123,7 +123,7 @@ class ccs811_bme280(object):
     self.ccs811.set_environmental_data(self.rh, self.tdry)
     while not self.ccs811.data_available():
       print("CCS811 starting up")
-      time.sleep(2)
+      time.sleep(1)
 
     if self.ccs811.data_available():
       self.ccs811.read_algorithm_results()

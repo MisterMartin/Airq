@@ -27,7 +27,7 @@ test_config = """
     "airq": {
       "ccs811_i2c": 91,
       "bme280_i2c": 119,
-      "ccs811_n_samples": 2,
+      "ccs811_n_samples": 60,
       "report_interval": 60
     }
 }
@@ -92,6 +92,8 @@ if __name__ == '__main__':
     else:
         config = json.loads(open(sys.argv[1]).read())
 
+    print(config['airq'])
+
     # Extract some useful config values
     host = config["chords"]["host"]
     chords_options = {
@@ -112,6 +114,10 @@ if __name__ == '__main__':
 
     # Start the CHORDS sender thread
     tochords.startSender()
+
+    # Flush the outputs
+    sys.stdout.flush()
+    sys.stderr.flush()
 
     while True:
         # Sleep until the next measurement time
