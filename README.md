@@ -60,4 +60,7 @@ Verify the combo card:
 - Sparkfun [CCS811 hookup guide](https://learn.sparkfun.com/tutorials/ccs811bme280-qwiic-environmental-combo-breakout-hookup-guide?_ga=2.42719461.1539937089.1601160436-1748549399.1600881830).
 - Sparkfun [GitHub CCS811 repository](https://github.com/sparkfun/CCS811_Air_Quality_Breakout).
 - Sparkfun [Qwicc-shim](https://learn.sparkfun.com/tutorials/qwiic-shim-for-raspberry-pi-hookup-guide?_ga=2.122920139.1539937089.1601160436-1748549399.1600881830).
-- Note about the chip [not being supported on rPi](https://raspberrypi.stackexchange.com/questions/74418/pi-cannot-communicate-with-i2c-sensor) :-(.
+- Note about the chip [not being supported on rPi](https://raspberrypi.stackexchange.com/questions/74418/pi-cannot-communicate-with-i2c-sensor) :-(. But it can be ameliorated by slowing down the I2C bus.
+- Interquartile Range Filtering:
+    - https://en.wikipedia.org/wiki/Interquartile_range
+    - https://machinelearningmastery.com/how-to-use-statistics-to-identify-outliers-in-data/
