@@ -40,7 +40,7 @@ sudo: unable to resolve host airq
 
 Verify the combo card:
 
-    python ccs811_bme280.py
+    python3 ccs811_bme280.py
     CCS811 starting up
     CCS811 starting up
     CCS811 starting up
