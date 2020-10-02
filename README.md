@@ -55,7 +55,9 @@ Application notes and data sheets are in the _Docs_ directory.
 1. Install Raspberry Pi OS on an SD card using the [Raspberry Pi Imager](https://www.raspberrypi.org/downloads/).
 
 1. Mount the card on a host system (it will be labelled _boot_). Change to that directory, 
-   and create an empty file named _ssh_, and a file named _wpa_supplicant.conf_:
+   and create an empty file named _ssh_.
+   
+   Create a file named _wpa_supplicant.conf_ which contains:
    
         country=US
         ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
