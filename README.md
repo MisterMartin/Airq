@@ -1,6 +1,6 @@
 # Airq
 
-## Air quality to CHORDS
+## Air Quality to CHORDS
 
 A Raspberry Pi system which makes some rudimentary air quailty measurements, and sends them
 to a CHORDS portal. The _ccs811_bme280.py_ module can be used by itself, without connecting
