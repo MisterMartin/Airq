@@ -50,27 +50,33 @@ real-world usage data here as I find it:
 
 Application notes and data sheets are in the _Docs_ directory.
 
-## Setup
+## Setup on Raspberry Pi Zero W
 
-Enable I2C using raspi-config
+1. Install Raspberry Pi OS using the [Raspberry Pi Imager](https://www.raspberrypi.org/downloads/).
+
+1. ...
+
+1. Enable I2C using raspi-config
 
         sudo raspi-config
 
-Enable I2C clock stretching by setting the I2C baud rate in `/boot/config.txt`:
+1. Enable I2C clock stretching by setting the I2C baud rate in `/boot/config.txt`:
 
         dtparam=i2c_arm_baudrate=10000
 
-Install packages:
+1. Install packages:
 
         sudo apt-get install i2c-tools
         sudo apt-get install libatlas-base-dev
-Install chip support:
+
+1. Install chip support:
 
         # Install the sparkfun qwiic python support
         sudo pip3 install sparkfun-qwiic
 
-Python packages:
-    pip3 install numpy
+1. Python packages:
+
+        pip3 install numpy
 
 ## Testing
 Verify that both chips are there:
