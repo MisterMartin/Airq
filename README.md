@@ -52,11 +52,31 @@ Application notes and data sheets are in the _Docs_ directory.
 
 ## Setup on Raspberry Pi Zero W
 
-1. Install Raspberry Pi OS using the [Raspberry Pi Imager](https://www.raspberrypi.org/downloads/).
+1. Install Raspberry Pi OS on an SD card using the [Raspberry Pi Imager](https://www.raspberrypi.org/downloads/).
 
-1. ...
+1. Mount the card on a host system (it will be labelled _boot_). Change to that directory, 
+   and create an empty file named _ssh_, and a file named _wpa_supplicant.conf_:
+   
+        country=US
+        ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+        update_config=1
+        network={
+        scan_ssid=1
+        ssid="SSID"
+        psk="Password"
+        }
+        
+   While you are at it, create a backup copy of this file, because the original will disappear 
+   at boot up.
+       
 
-1. Enable I2C using raspi-config
+1. Put the SD card in the RPi, and power it up. It should appear on the network as
+   'raspberrypi'. Ssh into it (pi, raspberry).
+   
+   If it didn't apear on the network you probably have an error in _wpa_supplicant.conf_. Fix 
+   that. Aren't you glad you made a backup copy?
+   
+1. sing raspi-config, set the hostname (under Networking), and enable I2C (under Interfacing):
 
         sudo raspi-config
 
@@ -66,19 +86,14 @@ Application notes and data sheets are in the _Docs_ directory.
 
 1. Install packages:
 
-        sudo apt-get install i2c-tools
         sudo apt-get install libatlas-base-dev
 
-1. Install chip support:
+1. Install Python packages (as user pi):
 
-        # Install the sparkfun qwiic python support
-        sudo pip3 install sparkfun-qwiic
-
-1. Python packages:
-
-        pip3 install numpy
+        pip3 install sparkfun-qwiic
 
 ## Testing
+
 Verify that both chips are there:
 ```
 sudo i2cdetect -y 1
