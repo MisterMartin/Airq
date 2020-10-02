@@ -50,7 +50,7 @@ real-world usage data here as I find it:
 
 Application notes and data sheets are in the _Docs_ directory.
 
-## Setup on Raspberry Pi Zero W
+## Setup on a Raspberry Pi Zero W
 
 1. Install Raspberry Pi OS on an SD card using the [Raspberry Pi Imager](https://www.raspberrypi.org/downloads/).
 
@@ -78,7 +78,7 @@ Application notes and data sheets are in the _Docs_ directory.
    If it didn't apear on the network you probably have an error in _wpa_supplicant.conf_. Fix 
    that. Aren't you glad you made a backup copy?
    
-1. sing raspi-config, set the hostname (under Networking), and enable I2C (under Interfacing):
+1. Using _raspi-config_, set the hostname (under Networking), and enable I2C (under Interfacing):
 
         sudo raspi-config
 
