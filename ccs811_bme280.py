@@ -148,11 +148,11 @@ class ccs811_bme280(object):
           print("CCS811 device error: %s" % strErr)
 
 if __name__ == '__main__':
-    sleep_int = 1
+    n_samples = 10
     if len(sys.argv) == 2:
-      sleep_int = int(sys.argv[1])
+      n_samples = int(sys.argv[1])
 
-    device = ccs811_bme280(n_avg=sleep_int)
+    device = ccs811_bme280(ccs811_n_samples=n_samples)
     while True:
       # Sleep first so that a full series can be collected
       time.sleep(sleep_int)
