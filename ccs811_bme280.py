@@ -155,5 +155,5 @@ if __name__ == '__main__':
     device = ccs811_bme280(ccs811_n_samples=n_samples)
     while True:
       # Sleep first so that a full series can be collected
-      time.sleep(sleep_int)
+      time.sleep(n_samples)
       print(device.reading())
