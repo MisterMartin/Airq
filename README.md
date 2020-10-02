@@ -1,4 +1,4 @@
-# Airq
+# AirQ
 
 ## Air Quality to CHORDS
 
@@ -11,37 +11,47 @@ This sensor is targeted for use in unsophisticated HVAC applications, for automa
 It seems to have a lot of quirks and mysteries; it's hard to find any definitive description of how it
 works, and what to expect in a real-world application. 
 
-The CCS811 uses a heated metal oxide sensor. The sensor is subject to drift, must be condiftioned, and referenced
+The CCS811 uses a heated metal oxide sensor. The sensor is subject to drift, must be conditioned, and referenced
 to a changinging baseline value. These functions are performed by an onboard processor, running an algorithm
-that tries to automate the process contiuously. The algorithm is not documented at all by the vendor; the datasheet
-is remarkably unhelpful.
+that tries to automate the process continuously. The algorithm is not very well documented, but you 
+can get a sense of how it is working from the application notes.
 
 The CCS811 also provides a value for "equivalent CO2", eCO2. The rationale is that since humans emit
 VOCs, when the TVOC increases, there must be humans present, and the CO2 concentration must be
 increasing. You can see that when the sensor is powered up, it starts with a value of eCO2 of
-400ppm, and then adjusts it based on the behavior of TVOC. Once again, there is no documentation
-on this algorithm. This all seems pretty tenuous and bogus. But perhaps it has some value to the
+400ppm, and then adjusts it based on the behavior of TVOC. There is no documentation
+on this algorithm. This all seems pretty tenuous but perhaps it has some value to the
 HVAC industry.
 
-So, my _personal_ conclusions are:
+So, my _personal_ observations are:
+
 * The sensor will tell you something about TVOC, in an indoor environment.
-* Do not expect an absolute reading. 
+* Do not expect an absolute reading.
 * Due to the internal baselining, done on who-knows-what schedule,
-  even the relative readings probably should not be compared from day to.
+  even the relative readings probably should probably not be compared from day to.
+  One application note says that this is done every 24 hours, and uses the lowest
+  reading over that period. But it seems that you would see a jump every 24 hours
+  as it is adjusted, and we don't see that. Perhaps it is done continuously?
 * The relative TVOC behavior over time is the most useful aspect of the readings. It clearly
   picks up cooking, and proximity of TVOC outgassing objects (e.g. set a lime near it, and it
   senses it immediately).
 * The eCO2 proxy seems really bogus as an air quality indicator, since there are so many things
-  in the home that can have very large impacts on TVOC. Perhaps it would be an indicator
-  for spaces that only have humans as sources of TVOCs. I don't know.
-* But, _it is still interesting to ponder what the readings mean_ in my particular application.
+  in the home that can have very large impacts on TVOC. eCO2 seems to basically track
+  TVOC. Perhaps it would be an indicator for spaces that only have humans as sources of TVOCs. I don't know.
+* But, _it is still fun and interesting to ponder what the readings mean_ in my
+  particular application.
 
-It is hard to find any solidly documented results from this sensor. It is mostly the plaything 
-of makers and tinkerers (like myself). I've found some more indepth information:
+It is hard to find any solidly documented results from this sensor. It seems to
+be mostly the plaything of makers and tinkerers (like myself). I'll document
+real-world usage data here as I find it:
+
 * [A long disussion](https://github.com/maarten-pennings/CCS811/issues/8) between several users,
   with some actual data.
 
+Application notes and data sheets are in the _Docs_ directory.
+
 ## Setup
+
 Enable I2C using raspi-config
 
         sudo raspi-config
