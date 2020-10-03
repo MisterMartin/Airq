@@ -137,3 +137,9 @@ Verify the combo card:
 - Interquartile Range Filtering:
     - https://en.wikipedia.org/wiki/Interquartile_range
     - https://machinelearningmastery.com/how-to-use-statistics-to-identify-outliers-in-data/
+- Sparkfun QWIIC cables:
+  - Black = GND
+  - Red = 3.3V
+  - Blue = SDA
+  - Yellow = SCL
+ 
