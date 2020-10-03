@@ -1,0 +1,15 @@
+{
+  "chords": {
+      "skey":    "secret_key",
+      "host":    "chords_host.com",
+      "enabled": true,
+      "inst_id": "1",
+      "test":    false
+  },
+  "airq": {
+    "ccs811_i2c": 91,
+    "bme280_i2c": 119,
+    "ccs811_n_samples": 60,
+    "chords_report_interval": 60
+  }
+}
