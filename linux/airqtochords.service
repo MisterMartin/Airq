@@ -10,7 +10,7 @@ Restart=always
 RestartSec=5
 Type=simple
 WorkingDirectory=/home/pi/AirQ
-ExecStart=/usr/bin/python3 /home/pi/AirQ/airqtochords.py /home/pi/AirQ/airq-mtnking.json
+ExecStart=/usr/bin/python3 /home/pi/AirQ/airqtochords.py /home/pi/AirQ/airq.json
 
 [Install]
 WantedBy=multi-user.target
