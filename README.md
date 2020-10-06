@@ -47,6 +47,9 @@ real-world usage data here as I find it:
 
 * [A long disussion](https://github.com/maarten-pennings/CCS811/issues/8) between several users,
   with some actual data.
+* Another long rambling 
+  [discussion])https://forum.mysensors.org/topic/10316/particle-powered-air-quality-sensor-logging-to-google-docs)
+  about using varius tvoc sensors.
 
 Application notes and data sheets are in the _Docs_ directory.
 
