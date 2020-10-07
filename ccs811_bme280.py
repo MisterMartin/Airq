@@ -40,7 +40,7 @@ class ccs811_bme280(object):
     self.ccs811_n_samples = ccs811_n_samples
 
     self.ccs811 = qwiic_ccs811.QwiicCcs811(address=ccs811_address)
-    self.bme280 = bme280 = qwiic_bme280.QwiicBme280(address=bme280_address)
+    self.bme280 = qwiic_bme280.QwiicBme280(address=bme280_address)
 
     self.ccs811.begin()
     self.bme280.begin()
