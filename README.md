@@ -2,14 +2,27 @@
 
 ## Air Quality to CHORDS
 
-A Raspberry Pi system which makes some rudimentary air quailty measurements, and sends them
-to a CHORDS portal. The _ccs811_bme280.py_ module can be used by itself, without connecting
-to CHORDS.
+A Raspberry Pi system which makes some rudimentary air quailty measurements, as well 
+as standard atomospheric measurements, and sends them to a CHORDS portal. The _airq.py_ 
+module can be used by itself, without connecting to CHORDS.
 
-This is based on the CCS811 sensor, which produces a relative reading of Total Volatile Organic Compounds (TVOC).
-This sensor is targeted for use in unsophisticated HVAC applications, for automatic control of ventilation.
-It seems to have a lot of quirks and mysteries; it's hard to find any definitive description of how it
-works, and what to expect in a real-world application. 
+Application notes and data sheets are in the _Docs_ directory.
+
+## Hardware
+
+1. Raspberry Pi Zero W
+1. SparkFun CCS811 module
+1. SparkFun BME280 module
+1. SparkFun TMP117 module
+
+## Backstory
+The original design was based on the the CCS811 sensor, which produces a relative reading of 
+Total Volatile Organic Compounds (TVOC). SparkFun provides a board which combines the CCS811 and
+a BME280 together, so you have TVOC and environmental measurements in one compact package!
+
+The CCS811 is targeted for use in unsophisticated HVAC applications, for automatic control of ventilation.
+It seems to have a lot of quirks and mysteries; it's hard to find any in-depth description of how it
+works, and what to expect in a real-world application. But it has its uses.
 
 The CCS811 uses a heated metal oxide sensor. The sensor is subject to drift, must be conditioned, and referenced
 to a changinging baseline value. These functions are performed by an onboard processor, running an algorithm
@@ -51,7 +64,24 @@ real-world usage data here as I find it:
   [discussion](https://forum.mysensors.org/topic/10316/particle-powered-air-quality-sensor-logging-to-google-docs)
   about using varius tvoc sensors.
 
-Application notes and data sheets are in the _Docs_ directory.
+## Redesign
+
+After observing measurements from the CCS811 for a few days, I began to wonder about the 
+atmospheric measurements. Reading the reviews on SparkFun, I discovered that the CCS811
+heater affects the temperature readings on the BME280. So I added a standalone BME280,
+to provide the environmental parameters. 
+
+And then I discovered that the temperatures from the BME280 didn't even closely match independent
+colocaed measurements. This led to the discovery (in the data sheet), that there is a heater for 
+the humidity sensor, and that the BME280 isn't recommended as a temperature sensor.
+
+So, I added a precision TMP117 temperature sensor. Now all parameters are working pretty well, with
+the exception of pressure, which is completely inaccurate. There are a few comments on the forums
+which indicate that SparkFun is aware that there is a problem with the pressure algorithm
+in their Qwiic_BME280.py module.
+
+SparkFun does not yey provide a Qwiic_TMP117.py module, so I wrote my own, derived from
+their Qwiic_BME280.py.
 
 ## Setup on a Raspberry Pi Zero W
 
