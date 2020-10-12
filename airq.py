@@ -1,5 +1,6 @@
 import qwiic_ccs811
 import qwiic_bme280
+import qwiic_tmp117
 import IQR
 import time
 import sys
@@ -24,7 +25,7 @@ chips, just by specifying the I2C adddresses for them.
 Code for this class was borrowed from the examples at
 https://qwiic-ccs811-py.readthedocs.io/en/latest/?
 """
-class ccs811_bme280(object):
+class airq(object):
   _deviceErrors = { \
     1 << 5 : "HeaterSupply",  \
       1 << 4 : "HeaterFault", \
@@ -35,15 +36,22 @@ class ccs811_bme280(object):
   }
 
 
-  def __init__(self, ccs811_address=0x5b, bme280_address=0x77, ccs811_n_samples=1):
+  def __init__(self, ccs811_address=0x5b, bme280_address=0x77, tmp117_address=0x48, ccs811_n_samples=1):
     self.lock = _thread.allocate_lock()
     self.ccs811_n_samples = ccs811_n_samples
 
     self.ccs811 = qwiic_ccs811.QwiicCcs811(address=ccs811_address)
     self.bme280 = qwiic_bme280.QwiicBme280(address=bme280_address)
+    self.tmp117 = qwiic_tmp117.QwiicTmp117(address=tmp117_address)
 
     self.ccs811.begin()
     self.bme280.begin()
+
+    self.tmp117.begin()
+    # The conversion and averaging affect who long we will have to wait
+    # for a conversion. See the TMP117 data sheet.
+    self.tmp117.set_avg(qwiic_tmp117.QwiicTmp117.CONV_AVG_8)
+    self.tmp117.set_cycle(qwiic_tmp117.QwiicTmp117.CONV_CYCLE_2)
 
     self.tvoc_q = []
     self.eco2_q = []
@@ -60,6 +68,7 @@ class ccs811_bme280(object):
     while True:
       self.lock.acquire()
       self.read_bme280()
+      self.read_tmp117()
       self.read_ccs811()
       self.lock.release()
       time.sleep(2)
@@ -112,12 +121,15 @@ class ccs811_bme280(object):
 
   def read_bme280(self):
     self.rh = self.bme280.humidity
-    self.tdry = self.bme280.temperature_celsius
     self.pres = self.bme280.pressure/100.0
     self.queue_add(self.rh_q, self.rh, "rh")
-    self.queue_add(self.tdry_q, self.tdry, "tdry")
     self.queue_add(self.pres_q, self.pres, "pres")
 
+  def read_tmp117(self):
+    while not self.tmp117.is_ready():
+      time.sleep(0.05)
+    self.tdry = self.tmp117.temperature_celsius
+    self.queue_add(self.tdry_q, self.tdry, "tdry")
 
   def read_ccs811(self):
     self.ccs811.set_environmental_data(self.rh, self.tdry)
@@ -152,7 +164,7 @@ if __name__ == '__main__':
     if len(sys.argv) == 2:
       n_samples = int(sys.argv[1])
 
-    device = ccs811_bme280(ccs811_n_samples=n_samples)
+    device = airq(ccs811_n_samples=n_samples)
     while True:
       # Sleep first so that a full series can be collected
       time.sleep(n_samples)

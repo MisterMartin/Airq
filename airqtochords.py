@@ -1,6 +1,6 @@
 #! /usr/local/bin/python3
 """
-Read ccs811 bme280 sensors, and send to CHORDS.
+Read ccs811 bme280 tmp117 sensors, and send to CHORDS.
 """
 
 # pylint: disable=C0103
@@ -12,7 +12,7 @@ import json
 import iwconfig
 import pychords.tochords as tochords
 
-import ccs811_bme280
+import airq
 
 # A test config to be used in the absence of a configuration file
 test_config = """
@@ -104,12 +104,14 @@ if __name__ == '__main__':
 
     ccs811_i2c = config["airq"]["ccs811_i2c"]
     bme280_i2c = config["airq"]["bme280_i2c"]
+    tmp117_i2c = config["airq"]["tmp117_i2c"]
     ccs811_n_samples = config["airq"]["ccs811_n_samples"]
     chords_report_interval = config["airq"]["chords_report_interval"]
 
-    device = ccs811_bme280.ccs811_bme280(
+    device = airq.airq(
       ccs811_address=ccs811_i2c, 
       bme280_address=bme280_i2c, 
+      tmp117_address=tmp117_i2c,
       ccs811_n_samples=ccs811_n_samples)
 
     # Start the CHORDS sender thread
