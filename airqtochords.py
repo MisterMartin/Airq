@@ -27,6 +27,7 @@ test_config = """
     "airq": {
       "ccs811_i2c": 91,
       "bme280_i2c": 119,
+      "tmp117_i2c": 72,
       "ccs811_n_samples": 60,
       "report_interval": 60
     }
