@@ -99,16 +99,15 @@ Application notes and data sheets are in the _Docs_ directory.
 
 ## Testing
 
-Verify that both chips are there:
+Verify that all chips are visible on the I2C bus (48==TMP117, 5b==CS811, 77==BME280):
 ```
 sudo i2cdetect -y 1
-sudo: unable to resolve host airq
-     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+ 0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
 00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
 10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+40: -- -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
 50: -- -- -- -- -- -- -- -- -- -- -- 5b -- -- -- -- 
 60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 70: -- -- -- -- -- -- -- 77
