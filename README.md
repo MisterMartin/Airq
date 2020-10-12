@@ -143,9 +143,9 @@ sudo i2cdetect -y 1
 70: -- -- -- -- -- -- -- 77
 ```
 
-Verify the combo card:
+Verify the hardware:
 
-    python3 ccs811_bme280.py
+    python3 airq.py
     CCS811 starting up
     CCS811 starting up
     CCS811 starting up
