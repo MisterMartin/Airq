@@ -86,21 +86,23 @@ class airq(object):
     """
     self.lock.acquire()
     retval = {}
+
     tvoc = self.queue_avg(self.tvoc_q, "tvoc")
     retval["tvoc_ppb"] = "{:.2f}".format(tvoc[0])
     retval["tvoc_std"] = "{:.2f}".format(tvoc[2])
-    eco2 = self.queue_avg(self.eco2_q, "eco2")
 
+    eco2 = self.queue_avg(self.eco2_q, "eco2")
     retval["eco2_ppm"] = "{:.2f}".format(eco2[0])
     retval["eco2_std"] = "{:.2f}".format(eco2[2])
 
-    retval["pres_mb"] = "{:.2f}".format(self.queue_avg(self.pres_q, "pres")[0])
+    retval["pres_mb"] = "{:.2f}".format(self.queue_avg(self.pres_q, "pres", do_iqr=False)[0])
 
-    retval["tdry_degc"] = "{:.2f}".format(self.queue_avg(self.tdry_q, "tdry")[0])
+    retval["tdry_degc"] = "{:.2f}".format(self.queue_avg(self.tdry_q, "tdry", do_iqr=False)[0])
 
-    retval["rh"] = "{:.2f}".format(self.queue_avg(self.rh_q, "rh")[0])
+    retval["rh"] = "{:.2f}".format(self.queue_avg(self.rh_q, "rh", do_iqr=False)[0])
 
     retval["n"] = "{:d}".format(len(self.rh_q))
+
     self.lock.release()
     return retval
 
@@ -109,17 +111,24 @@ class airq(object):
     if len(q) > self.ccs811_n_samples:
       q.pop(0)
 
-  def queue_avg(self, q, name):
+  def queue_avg(self, q, name, do_iqr=True):
     """
     Return a tuple of the q:
       (median, mean, std dev)
     """
-    (cleaned, outliers) = IQR.iqr_filter(q, 5.0)
+    if do_iqr:
+      (cleaned, outliers) = IQR.iqr_filter(q, 5.0)
+    else:
+      cleaned = q
+      outliers = []
+
     retval = (stat.median(cleaned), stat.mean(cleaned), stat.stdev(cleaned))
+
     if len(outliers):
       print(name, q)
       print("*** Ignoring outliers in", name, outliers)
       print(retval)
+
     return retval
 
   def read_bme280(self):
