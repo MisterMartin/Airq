@@ -126,6 +126,8 @@ their Qwiic_BME280.py.
 1. Install Python packages (as user pi):
 
         pip3 install sparkfun-qwiic
+        pip3 install adafruit-circuitpython-bme280
+        pip3 install adafruit-circuitpython-ccs811
 
 ## Testing
 
