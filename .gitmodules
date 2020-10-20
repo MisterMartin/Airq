@@ -1,6 +1,3 @@
 [submodule "pychords"]
 	path = pychords
 	url = https://github.com/sugartechllc/pychords.git
-[submodule "CCS811_Air_Quality_Breakout"]
-	path = CCS811_Air_Quality_Breakout
-	url = https://github.com/sparkfun/CCS811_Air_Quality_Breakout.git
