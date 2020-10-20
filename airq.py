@@ -1,9 +1,5 @@
-import board
-import digitalio
-import busio
-import time
-import adafruit_bme280
-import adafruit_ccs811
+import qwiic_ccs811
+import qwiic_bme280
 import qwiic_tmp117
 import IQR
 import time
@@ -44,13 +40,14 @@ class airq(object):
     self.lock = _thread.allocate_lock()
     self.ccs811_n_samples = ccs811_n_samples
 
-    self.i2c = busio.I2C(board.SCL, board.SDA)
-
-    self.bme280 = adafruit_bme280.Adafruit_BME280_I2C(self.i2c, address=bme280_address)
-    self.ccs811 = adafruit_ccs811.CCS811(self.i2c, address=ccs811_address)
+    self.ccs811 = qwiic_ccs811.QwiicCcs811(address=ccs811_address)
+    self.bme280 = qwiic_bme280.QwiicBme280(address=bme280_address)
     self.tmp117 = qwiic_tmp117.QwiicTmp117(address=tmp117_address)
 
+    self.ccs811.begin()
+    self.bme280.begin()
     self.tmp117.begin()
+
     # The conversion and averaging affect who long we will have to wait
     # for a conversion. See the TMP117 data sheet.
     self.tmp117.set_avg(qwiic_tmp117.QwiicTmp117.CONV_AVG_8)
@@ -102,7 +99,6 @@ class airq(object):
     retval["rh"] = "{:.2f}".format(self.queue_avg(self.rh_q, "rh", do_iqr=False)[0])
 
     retval["n"] = "{:d}".format(len(self.rh_q))
-
     self.lock.release()
     return retval
 
@@ -133,32 +129,36 @@ class airq(object):
 
   def read_bme280(self):
     self.rh = self.bme280.humidity
-    #self.pres = self.bme280.pressure/100.0
-    self.pres = self.bme280.pressure
+    self.pres = self.bme280.pressure/100.0
     self.queue_add(self.rh_q, self.rh, "rh")
     self.queue_add(self.pres_q, self.pres, "pres")
 
   def read_tmp117(self):
+    n = 0
     while not self.tmp117.is_ready():
       time.sleep(0.05)
+      n += 1
+      if (n > 20):
+        print("tmp117 timeout, no meausrement")
+        return
     self.tdry = self.tmp117.temperature_celsius
     self.queue_add(self.tdry_q, self.tdry, "tdry")
 
   def read_ccs811(self):
     self.ccs811.set_environmental_data(self.rh, self.tdry)
-    #while not self.ccs811.data_available():
-    while not self.ccs811.data_ready:
+    while not self.ccs811.data_available():
       print("CCS811 starting up")
       time.sleep(1)
 
-    if self.ccs811.data_ready:
-      self.eco2 = self.ccs811.eco2
-      self.tvoc = self.ccs811.tvoc
+    if self.ccs811.data_available():
+      self.ccs811.read_algorithm_results()
+      self.eco2 = self.ccs811.CO2
+      self.tvoc = self.ccs811.TVOC
       self.queue_add(self.eco2_q, self.eco2, "eco2")
       self.queue_add(self.tvoc_q, self.tvoc, "tvoc")
 
     else:
-      print("CCS811  data not avaiable")
+      print("CCS811  data not available")
       if self.ccs811.check_status_error():
         error = self.ccs811.get_error_register();
         if error == 0xFF:   
