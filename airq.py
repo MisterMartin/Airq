@@ -145,32 +145,40 @@ class airq(object):
     self.queue_add(self.tdry_q, self.tdry, "tdry")
 
   def read_ccs811(self):
-    self.ccs811.set_environmental_data(self.rh, self.tdry)
-    while not self.ccs811.data_available():
-      print("CCS811 starting up")
-      time.sleep(1)
 
-    if self.ccs811.data_available():
-      self.ccs811.read_algorithm_results()
-      self.eco2 = self.ccs811.CO2
-      self.tvoc = self.ccs811.TVOC
-      self.queue_add(self.eco2_q, self.eco2, "eco2")
-      self.queue_add(self.tvoc_q, self.tvoc, "tvoc")
+    while True:
+      try:
+        self.ccs811.set_environmental_data(self.rh, self.tdry)
+        while not self.ccs811.data_available():
+          print("CCS811 starting up")
+          time.sleep(1)
 
-    else:
-      print("CCS811  data not available")
-      if self.ccs811.check_status_error():
-        error = self.ccs811.get_error_register();
-        if error == 0xFF:   
-          # communication error
-          print("CCS811 failed to get Error ID register from sensor")
+        if self.ccs811.data_available():
+          self.ccs811.read_algorithm_results()
+          self.eco2 = self.ccs811.CO2
+          self.tvoc = self.ccs811.TVOC
+          self.queue_add(self.eco2_q, self.eco2, "eco2")
+          self.queue_add(self.tvoc_q, self.tvoc, "tvoc")
+
         else:
-          strErr = "CCS811 unknown error"
-          for code in self._deviceErrors.keys():
-            if error & code:
-              strErr = self._deviceErrors[code]
-              break
-          print("CCS811 device error: %s" % strErr)
+          print("CCS811  data not available")
+          if self.ccs811.check_status_error():
+            error = self.ccs811.get_error_register();
+            if error == 0xFF:   
+              # communication error
+              print("CCS811 failed to get Error ID register from sensor")
+            else:
+              strErr = "CCS811 unknown error"
+              for code in self._deviceErrors.keys():
+                if error & code:
+                  strErr = self._deviceErrors[code]
+                  break
+              print("CCS811 device error: %s" % strErr)
+        break
+
+      except OSError as error:
+        print("***", error, "while accessing CCS811, sleeping for 10 seconds.")
+        time.sleep(10)
 
 if __name__ == '__main__':
     n_samples = 10
