@@ -1,6 +1,8 @@
 {
   "chords": {
-      "skey":    "secret_key",
+      "skey": "The CORDS instrument access key, ignored if api_email and api_key are present",
+      "api_email": "CHORDS user email",
+      "api_key": "CHORDS user api key",
       "host":    "chords_host.com",
       "enabled": true,
       "inst_id": "1",

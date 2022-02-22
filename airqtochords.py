@@ -97,11 +97,16 @@ if __name__ == '__main__':
 
     # Extract some useful config values
     host = config["chords"]["host"]
+
     chords_options = {
         "inst_id": config["chords"]["inst_id"],
         "test": config["chords"]["test"],
-        "skey": config["chords"]["skey"]
     }
+    if "skey" in config["chords"]:
+        chords_options["skey"] = config["chords"]["skey"]
+    if ("api_email" in config["chords"]) and ("api_key" in config["chords"]):
+        chords_options["api_email"] = config["chords"]["api_email"]
+        chords_options["api_key"] = config["chords"]["api_key"]
 
     ccs811_i2c = config["airq"]["ccs811_i2c"]
     bme280_i2c = config["airq"]["bme280_i2c"]
